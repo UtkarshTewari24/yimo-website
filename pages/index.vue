@@ -275,7 +275,7 @@ export default {
         { name: 'USAMOguide', logo: '/Test_logo.png', href: 'https://www.usamoguide.com/' },
         { name: 'Saintly', logo: '/Saintly.png', href: 'https://saintlymath.com/' },
         { name: 'USAEO', logo: '/USAEO.png', href: 'https://usaeo.org/' },
-        { name: 'PiMath', logo: '/PiMath.jpg', href: '#partners' },
+        { name: 'PiMath', logo: '/PiMath-noBG.png', href: 'https://www.paquinmath.org/' },
       ],
     }
   },
