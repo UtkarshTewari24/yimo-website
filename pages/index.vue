@@ -348,6 +348,8 @@ export default {
         { name: 'AoPS', logo: '/aops-logo.png', href: 'https://artofproblemsolving.com/' },
         { name: 'USAMOguide', logo: '/Test_logo.png', href: 'https://www.usamoguide.com/' },
         { name: 'Saintly', logo: '/Saintly.png', href: 'https://saintlymath.com/' },
+        { name: 'USAEO', logo: '/USAEO.png', href: 'https://usaeo.org/' },
+        { name: 'PiMath', logo: '/PiMath-noBG.png', href: 'https://www.paquinmath.org/' },
         { name: 'Solvefire', logo: '/solvefire.png', href: 'https://solvefire.net' },
         { name: 'Euler Circle', logo: '/eulercircle.svg', href: 'https://eulercircle.com' },
       ],
