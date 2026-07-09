@@ -107,7 +107,7 @@
           <h2>Format</h2>
           <div class="write-line">
             <h3>Problem Format</h3>
-            <p>20 written problems: 10 multiple choice and 10 AIME-style integer answers.</p>
+            <p>20 written problems with integer answers.</p>
             <a class="scoring-guide-link" href="/YIMO_Scoring_guide.pdf" target="_blank" rel="noopener">Open scoring guide</a>
           </div>
           <div class="write-line">
