@@ -225,7 +225,7 @@
       <div class="accordion-stack">
         <details v-for="item in faqs" :key="item.q" class="accordion">
           <summary>{{ item.q }}</summary>
-          <p>{{ item.a }}</p>
+          <p v-html="item.a"></p>
         </details>
       </div>
       <p class="faq-note">
@@ -339,8 +339,20 @@ export default {
           a: 'The written round has 20 problems, then the top 8 in each division advance to a final round with computational and proof problems.',
         },
         {
+          q: 'Are calculators allowed?',
+          a: "No, calculators aren't allowed.",
+        },
+        {
+          q: 'Are awards and certificates available?',
+          a: 'Awards are given to both divisions, and participation certificates are available.',
+        },
+        {
+          q: 'Where can I study?',
+          a: 'Check the <a href="/archive">Archive</a> and <a href="https://saintlymath.com/" target="_blank" rel="noopener">Saintly</a> for practice.',
+        },
+        {
           q: 'How do I register?',
-          a: 'Use the registration form and upload the parental consent form before August 27, 23:59 EST.',
+          a: 'Use the free registration form and upload the parental consent form before August 27, 23:59 EST.',
         },
       ],
       partners: [
