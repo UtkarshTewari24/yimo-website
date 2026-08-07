@@ -134,7 +134,7 @@
       </div>
       <div class="accordion-stack">
         <details class="accordion" open>
-          <summary>Executive Directors</summary>
+          <summary>Competition Directors</summary>
           <div class="staff-grid">
             <article
               v-for="member in executiveDirectors"
@@ -157,7 +157,7 @@
           </div>
         </details>
         <details class="accordion">
-          <summary>Former Directors</summary>
+          <summary>Leadership Emeritus</summary>
           <div class="staff-grid">
             <article v-for="member in formerDirectors" :key="member.name" class="compact-staff-card">
               <img v-if="member.image" :src="member.image" :alt="member.name" />
@@ -250,6 +250,7 @@
         >
           <img :src="partner.logo" :alt="partner.name" />
           <span>{{ partner.name }}</span>
+          <span v-if="partner.tier" class="partner-tier" :class="'tier-' + partner.tier.toLowerCase()">{{ partner.tier }} Sponsor</span>
         </a>
       </div>
       <div class="closing-cta">
@@ -279,47 +280,41 @@ export default {
       flipped: {},
       executiveDirectors: [
         { name: 'Wenhao Lu', image: '/staff/wenhaolu.png', bio: 'is a USAJMO Honorable Mention who scored 11 on the AIME and competes in the USACO Platinum division. He loves combinatorics and algebra, and his club baseball team peaked at #75 nationally.' },
-        { name: 'Hyunjun Yi', image: '/staff/junyi.png', bio: 'is an AMC 12 Perfect Scorer who works as a Deputy Executive Director at STEMise. Growing up in the Netherlands, he likes to hang out with friends and listen to music in his free time.' },
-        { name: 'Daniel Edouard', image: '/staff/danieledouard.png', bio: 'is a Merit-Based Harvard Fellow who has conducted independent computational neuropsychology research under a Yale professor. His work sits at the intersection of AI, applied math, and neuroscience, with a focus on neurodivergent developmental disorders. He founded Les Enfants du Monde, a nonprofit for STEM, AI, and entrepreneurship education for youth in the Democratic Republic of the Congo. In his free time, he plays tennis and pickleball and has played violin for six years.' },
-        { name: 'Kristen Zhou', image: '/staff/kristenzhou.png', bio: 'is a student who enjoys competition math and teaching it. Despite missing AIME by 1.5 points, she has placed first and fourth at many regional MATHLEAGUE.ORG competitions. She is a four-year cross country runner who has qualified for the Central Coast Section three times. In her free time, she enjoys PJSK and indie music.' },
+        { name: 'Hyunjun Yi', image: '/staff/junyi.png', bio: 'is an AMC-12 Perfect Scorer who now works as a Deputy Executive Director at STEMise. Growing up in the Netherlands, he likes to hang out with his friends and listen to music in his free time.' },
+        { name: 'Daniel Edouard', image: '/staff/danieledouard.png', bio: 'is a Merit-Based Harvard Fellow who has conducted independent computational neuropsychology research under the supervision of a Yale professor. His work sits at the intersection of AI, applied math, and neuroscience, with a focus on developing computational applications for neurodivergent developmental disorders. A frequent presenter at national research conferences, he also serves on the Workshop and Outreach team for NXT Horizon. He is the founder of Les Enfants du Monde, a nonprofit focused on STEM, AI, and entrepreneurship education for youth in the Democratic Republic of the Congo. In his free time, he is an avid tennis and pickleball player and has played violin for six years.' },
+        { name: 'Kristen Zhou', image: '/staff/kristenzhou.png', bio: 'is a student who enjoys competition math and teaching it. Despite missing AIME by 1.5 points, she has placed first and fourth at many regional MATHLEAGUE.ORG competitions. She is a four-year cross country runner who has qualified for the Central Coast Section three times. In her free time, she enjoys playing PJSK, watching Danganronpa, and listening to indie music.' },
+        { name: 'Abhiram Jetty', image: '/staff/abhiramjetty.png', bio: 'is a USAJMO qualifier, TXSEF finalist, Thermo Fisher finalist, and AMC 10 Distinguished Honor Roll recipient. As a 9th grader, he likes to play video games, swim, and write math problems for contests like YIMO.' },
       ],
       staffLeadership: [
-        { name: 'Daniel Edouard', role: 'Head of Marketing', image: '/staff/danieledouard.png', bio: 'is a Merit-Based Harvard Fellow whose work sits at the intersection of AI, applied math, and neuroscience. He founded Les Enfants du Monde, a nonprofit for STEM, AI, and entrepreneurship education for youth in the Democratic Republic of the Congo, and in his free time plays tennis, pickleball, and violin.' },
-        { name: 'Abhiram Jetty', role: 'Head of Internal Operations', image: '/staff/abhiramjetty.png', bio: 'is a USAJMO qualifier, TXSEF finalist, Thermo Fisher finalist, and AMC 10 Distinguished Honor Roll recipient. As a 9th grader, he likes to play video games, swim, and write math problems for contests like YIMO.' },
-        { name: 'Shining Sun', role: 'Head of Problem Writing', bio: 'is a 6x AIME qualifier and 2x USAJMO qualifier who also writes problems for national competitions in Nepal. In his free time, he enjoys video games and exploring random places with friends.' },
+        { name: 'Rayoon Kim', role: 'Head of Logistics', bio: 'is a USAMO qualifier who can be found coordbashing the most diabolical geometry problem. In his free time, he enjoys playing various PvP games, watching Danganronpa, and listening to various indie groups.' },
+        { name: 'Shining Sun', role: 'Problem Czar', bio: 'is a 6x AIME qualifier and 2x USAJMO qualifier. He also works as a problem writer for national competitions in Nepal. In his free time, he enjoys playing video games and exploring random places with friends.' },
+        { name: 'Karam Gill', role: 'Problem Czar', image: '/staff/karamgill.png', bio: 'is a rising 8th grader who is passionate about math and is a 3x AIME qualifier. Outside of math, he enjoys playing basketball, board games, and card games.' },
       ],
       formerDirectors: [
         { name: 'Ryan Ahn', role: 'Former Competition Director', image: '/staff/ryanahn.png' },
         { name: 'Andrew Zhang', role: 'Former Competition Director', image: '/staff/andrewzhang.png' },
       ],
       generalStaff: [
-        { name: 'Aarin Patkar', bio: 'Competitive speech and debate student with a strong passion for mathematics and Spanish.' },
-        { name: 'Aaron Qin', image: '/staff/aaronqin.png', bio: 'A 2x AIME qualifier interested in creative problem-solving, startup culture, filmmaking, songwriting, and coding.' },
-        { name: 'Atharv Karamcheti', image: '/staff/atharvkaramcheti.png', bio: 'Freshman interested in biomedical engineering, robotics, chemistry, origami, digital art, photography, and piano.' },
-        { name: 'Adithya Balakumar', image: '/staff/adithyabalakumar.png', bio: 'AIME qualifier with Math League International recognition and a state-level robotics innovation award.' },
-        { name: 'Charlie Yang', image: '/staff/charles.png', bio: 'Three-time AIME qualifier with AMC 10 Distinguished Honor Roll and independent research presentation experience.' },
-        { name: 'Christopher Huang', image: '/staff/christopherhuang.png', bio: 'STEMise education executive and Senior SAT Tutor at Schoolhouse.world, mentoring students internationally.' },
-        { name: 'Collin Du', image: '/staff/collindu.png', bio: 'National K-12 chess champion training for ISEF, with interests in fishing, skiing, and writing.' },
-        { name: 'Damayne Anderson', image: '/staff/damayneanderson.png', bio: 'Student-athlete and Daily Math founder focused on USACO, AIME preparation, leadership, and community service.' },
-        { name: 'George Paret', bio: '4x AIME qualifier with top algebra and geometry results across PUMaC, BMT, HMMT, MATHCOUNTS, and ARML.' },
-        { name: 'Gonçalo Franco', image: '/staff/goncalofranco.png', bio: "Gonçalo has won multiple national math and technology olympiads. He manages his own digital agency and works on multiple projects, including this website's design." },
-        { name: 'Jacob Rotella Riggers', image: '/staff/jacobriggers.png', bio: 'VEX VRC Worlds competitor with strong math, programming, robotics, distance running, and baseball experience.' },
+        { name: 'Adithya Balakumar', image: '/staff/adithyabalakumar.png', bio: 'is an AIME qualifier (2026) with a Bronze Medal at the Math League International Competition and a state-level robotics innovation award. He loves exploring local parks and drinking matcha.' },
+        { name: 'Bryan Bu', bio: 'Bio coming soon.' },
+        { name: 'Chloe Jin', bio: 'Bio coming soon.' },
+        { name: 'Christopher Huang', image: '/staff/christopherhuang.png', bio: 'serves as the Executive of Education at STEMise, where he leads initiatives to make STEM learning more accessible. As a Senior SAT Tutor at Schoolhouse.world, he has mentored over 65 students across 20 countries and overseen more than 1,200 certifications. Beyond education, he has a personal interest in the intersection of dentistry and materials science.' },
+        { name: 'George Paret', bio: 'is a 4x AIME qualifier, AMC 10/12 Distinguished Honor Roll recipient, PUMaC Top 10 Geometry, BMT Top 10 Geometry, BMT Top 10 Algebra, HMMT Top 25 Geometry, MATHCOUNTS Nationals Qualifier, ARML Perfect Scorer, and co-founder of GPMO. In his free time, he enjoys playing ping-pong and listening to music.' },
+        { name: 'Gonçalo Franco', image: '/staff/goncalofranco.png', bio: "Gonçalo has won multiple national math and technology olympiads. Currently, he manages his own digital agency and works on multiple projects, including this website's design." },
+        { name: 'Ira KC', bio: 'Bio coming soon.' },
+        { name: 'Jacob Blais', bio: 'Bio coming soon.' },
         { name: 'Jayvant Rajesh', image: '/staff/jayvantrajesh.webp', bio: "Jayvant serves as Chief of Staff at STEMise, where he leads organizational strategy, including revising the team's mission statement and shaping recruitment and overall direction." },
-        { name: 'Justin Guo', bio: '4x AIME qualifier, HMMT top 50 placer, USACHO qualifier, and Olympiad Insider officer.' },
-        { name: 'Karam Gill', image: '/staff/karamgill.png', bio: 'Karam Gill is a rising 8th grader who is passionate about math and is a 3x AIME qualifier. Outside of math, he enjoys playing basketball, board games, and card games.' },
-        { name: 'Krish Kejriwal', image: '/staff/krishkejriwal.png', bio: 'Aspiring mathematician with MATHCOUNTS and AMC 8 distinctions, writing problems for YIMO.' },
-        { name: 'Lefteris Demosthenous', bio: 'AIME qualifier and aspiring computational biology researcher with a strong interest in weightlifting and piano.' },
-        { name: 'Leo Pattison', image: '/staff/leopattison.png', bio: 'Track and soccer athlete who volunteers at local workshops to teach math and coding.' },
-        { name: 'Nathan Zaltsman', image: '/staff/nathanzaltsman.png', bio: 'NXT Horizon alumnus turned mentor, competitive chess player, and regular competitive coding practitioner.' },
-        { name: 'Philip Dong', image: '/staff/philipdong.jpg', bio: 'Philip Dong is an AMC 10 DHR, AIME qualifier, and USA(J)MO qualifier who also earned Honors in the US National Chemistry Olympiad. Interested in math, coding, and chemistry, he likes to play tennis, video games, and piano — and, most importantly, eat.' },
-        { name: 'Pietro Loraschi', image: '/staff/pietroloraschi.png', bio: 'USACO Silver competitor preparing for USAPhO via F=ma and World Scholar Cup top placer.' },
-        { name: 'Rayoon Kim', bio: 'USAMO qualifier who enjoys difficult geometry problems and contest problem solving.' },
-        { name: 'Sean Puon', image: '/staff/seanpuon.png', bio: 'Student with a strong academic focus in STEM and multi-language proficiency. Passionate about student wellness, community and entrepreneurship projects, and athletic development — especially volleyball.' },
-        { name: 'Siddh Mistry', image: '/staff/siddhmistry.png', bio: 'Siddh Mistry is a high school senior interested in mathematics and computer science. In his free time he likes to watch anime, play sports, and coordbash.' },
-        { name: 'Stanley Kem', image: '/staff/stanleykem.png', bio: 'National writing competition placer, soccer captain, regional art award recipient, and hackathon builder.' },
-        { name: 'Tashi Satish', image: '/staff/tashisatish.png', bio: 'VEX VRC Worlds qualifier with robotics engineering experience and club soccer competition background.' },
-        { name: 'Vihaan Vajpeyi', image: '/staff/vihaanvajpeyi.jpeg', bio: 'Vihaan is an AIME qualifier with AMC 10 Distinguished Honor Roll and a RoboCup Nationals win who is interested in quantitative finance. In his free time, he enjoys playing video games and learning new math concepts.' },
-        { name: 'Wyatt Choi', image: '/staff/wyattchoi.png', bio: 'AIME qualifier, KMO Silver medalist, BMO distinction recipient, and olympiad problem writer for Solvefire and YIMO.' },
+        { name: 'Justin Guo', bio: 'is a 4x AIME qualifier, HMMT top 50 placer, USACHO qualifier, and Olympiad Insider officer. He enjoys chess, running, community service, and programming.' },
+        { name: 'Kunal Modi', bio: 'Student interested in business and entrepreneurship who competes in numerous math competitions, with competitive tennis as a hobby.' },
+        { name: 'Lefteris Demosthenous', bio: 'is an AIME qualifier with distinction and a USACO Silver competitive coder. He likes to play piano and lift weights.' },
+        { name: 'Philip Dong', image: '/staff/philipdong.jpg', bio: 'Philip Dong is an AMC 10 DHM, AIME qualifier, and USA(J)MO qualifier. He also competes in the US National Chemistry Olympiad and got Honors this year. He is interested in math, coding, and chemistry, and during his free time, he likes to play tennis, video games, and the piano and most importantly, eat.' },
+        { name: 'Philip Zhang', bio: 'Bio coming soon.' },
+        { name: 'Saahil Jain', bio: 'Bio coming soon.' },
+        { name: 'Sean Puon', image: '/staff/seanpuon.png', bio: 'Student with strong academic focus in STEM and multi-language proficiency. Passionate about student wellness, community and entrepreneurship projects, along with athletic development (especially in volleyball).' },
+        { name: 'Siddh Mistry', image: '/staff/siddhmistry.png', bio: 'Siddh Mistry is a high school senior interested in mathematics and computer science. In his free time he likes to watch anime and play sports (coordbashing).' },
+        { name: 'Utkarsh Tewari', bio: 'Bio coming soon.' },
+        { name: 'Vihaan Vajpeyi', image: '/staff/vihaanvajpeyi.jpeg', bio: 'Vihaan is an AIME qualifier with AMC 10 Distinguished Honor Roll and RoboCup Nationals winner who is interested in quantitative finance. In his free time, he enjoys playing video games and learning new math concepts.' },
+        { name: 'Wyatt Choi', image: '/staff/wyattchoi.png', bio: 'is a 1x AIME qualifier with Honor Roll, a Silver medalist in the Korean Math Olympiad (KMO), and a distinction recipient in the British Math Olympiad Round 1. He has placed in the Top 8 Teams at the Caltech Harvey Mudd Competition, Top 10 Individual at the Brown University Math Olympiad, and 3rd at his regional Math Field Competition. He writes olympiad problems for Solvefire and YIMO, and in his free time plays electric guitar and builds robots for VEX Robotics.' },
       ],
       faqs: [
         {
@@ -356,12 +351,11 @@ export default {
         },
       ],
       partners: [
-        { name: 'HRT', logo: '/hrt-logo.png', href: 'https://www.hudsonrivertrading.com/' },
-        { name: 'AoPS', logo: '/aops-logo.png', href: 'https://artofproblemsolving.com/' },
+        { name: 'HRT', logo: '/hrt-logo.png', href: 'https://www.hudsonrivertrading.com/', tier: 'Platinum' },
+        { name: 'PiMath', logo: '/PiMath-noBG.png', href: 'https://www.paquinmath.org/', tier: 'Silver' },
+        { name: 'AoPS', logo: '/aops-logo.png', href: 'https://artofproblemsolving.com/', tier: 'Bronze' },
         { name: 'USAMOguide', logo: '/Test_logo.png', href: 'https://www.usamoguide.com/' },
         { name: 'Saintly', logo: '/Saintly.png', href: 'https://saintlymath.com/' },
-        { name: 'USAEO', logo: '/USAEO.png', href: 'https://usaeo.org/' },
-        { name: 'PiMath', logo: '/PiMath-noBG.png', href: 'https://www.paquinmath.org/' },
         { name: 'Solvefire', logo: '/solvefire.png', href: 'https://solvefire.net' },
         { name: 'Euler Circle', logo: '/eulercircle.svg', href: 'https://eulercircle.com' },
       ],
@@ -1282,6 +1276,30 @@ export default {
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.partner-tier {
+  margin-top: 0.15rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.1em !important;
+  border: 1px solid currentColor;
+}
+
+.partner-tier.tier-platinum {
+  color: #d7dbe3;
+  background: rgba(215, 219, 227, 0.08);
+}
+
+.partner-tier.tier-silver {
+  color: #b8bcc4;
+  background: rgba(184, 188, 196, 0.08);
+}
+
+.partner-tier.tier-bronze {
+  color: #d08a4e;
+  background: rgba(208, 138, 78, 0.1);
 }
 
 .closing-cta {
