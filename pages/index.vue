@@ -305,7 +305,7 @@ export default {
         { name: 'Jacob Blais', bio: 'Bio coming soon.' },
         { name: 'Jayvant Rajesh', image: '/staff/jayvantrajesh.webp', bio: "Jayvant serves as Chief of Staff at STEMise, where he leads organizational strategy, including revising the team's mission statement and shaping recruitment and overall direction." },
         { name: 'Justin Guo', bio: 'is a 4x AIME qualifier, HMMT top 50 placer, USACHO qualifier, and Olympiad Insider officer. He enjoys chess, running, community service, and programming.' },
-        { name: 'Kunal Modi', bio: 'Student interested in business and entrepreneurship who competes in numerous math competitions, with competitive tennis as a hobby.' },
+        { name: 'Kunal Modi', image: '/staff/kunalmodi.jpeg', bio: 'Student interested in business and entrepreneurship who competes in numerous math competitions, with competitive tennis as a hobby.' },
         { name: 'Lefteris Demosthenous', bio: 'is an AIME qualifier with distinction and a USACO Silver competitive coder. He likes to play piano and lift weights.' },
         { name: 'Philip Dong', image: '/staff/philipdong.jpg', bio: 'Philip Dong is an AMC 10 DHM, AIME qualifier, and USA(J)MO qualifier. He also competes in the US National Chemistry Olympiad and got Honors this year. He is interested in math, coding, and chemistry, and during his free time, he likes to play tennis, video games, and the piano and most importantly, eat.' },
         { name: 'Philip Zhang', bio: 'Bio coming soon.' },
