@@ -286,7 +286,7 @@ export default {
         { name: 'Abhiram Jetty', image: '/staff/abhiramjetty.png', bio: 'is a USAJMO qualifier, TXSEF finalist, Thermo Fisher finalist, and AMC 10 Distinguished Honor Roll recipient. As a 9th grader, he likes to play video games, swim, and write math problems for contests like YIMO.' },
       ],
       staffLeadership: [
-        { name: 'Rayoon Kim', role: 'Head of Logistics', bio: 'is a USAMO qualifier who can be found coordbashing the most diabolical geometry problem. In his free time, he enjoys playing various PvP games, watching Danganronpa, and listening to various indie groups.' },
+        { name: 'Rayoon Kim', role: 'Head of Logistics', bio: 'is a USAMO qualifier who can be found coordbashing the most diabolical geometry problem. In his free time, he enjoys playing various PvP games, watching murderous media, and listening to Ado, Billie Eilish, and various indie groups.' },
         { name: 'Shining Sun', role: 'Problem Czar', bio: 'is a 6x AIME qualifier and 2x USAJMO qualifier. He also works as a problem writer for national competitions in Nepal. In his free time, he enjoys playing video games and exploring random places with friends.' },
         { name: 'Karam Gill', role: 'Problem Czar', image: '/staff/karamgill.png', bio: 'is a rising 8th grader who is passionate about math and is a 3x AIME qualifier. Outside of math, he enjoys playing basketball, board games, and card games.' },
       ],
