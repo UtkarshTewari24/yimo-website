@@ -423,7 +423,9 @@ export default {
       const root = this.$refs.page
       if (!root) return
 
-      const mm = gsap.matchMedia()
+      // The word wheel is a self-running crossfade with no scroll dependency,
+      // so it is built for every visitor: the four words are absolutely
+      // stacked on each other and only this timeline separates them.
       const ctx = gsap.context(() => {
         gsap.set('.wheel-word', { autoAlpha: 0, y: 24, rotationX: -40 })
         const wordTl = gsap.timeline({ repeat: -1 })
@@ -432,7 +434,19 @@ export default {
             .to(word, { autoAlpha: 1, y: 0, rotationX: 0, duration: 0.25, ease: 'power3.out' })
             .to(word, { autoAlpha: 0, y: -18, rotationX: 24, duration: 0.22, ease: 'power3.in' }, '+=0.35')
         })
+      }, root)
 
+      // Everything below is scroll-driven, and every one of these tweens
+      // writes its `from` state to the DOM the moment it is created - the
+      // staff and FAQ cards get `opacity: 0; visibility: hidden` and stay
+      // that way until the ScrollTrigger plays them back. Building them and
+      // then calling trigger.disable() for reduced-motion visitors (as this
+      // used to do) left that hidden state on screen permanently, so the
+      // whole staff section rendered blank. Build them only when the visitor
+      // has not asked for reduced motion; the sections then keep their plain
+      // CSS appearance for everyone else.
+      const mm = gsap.matchMedia()
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
         const climbTl = gsap.timeline({
           scrollTrigger: {
             trigger: '.climb-panel',
@@ -480,13 +494,10 @@ export default {
           ease: 'power2.out',
         })
 
+        // Only worth fetching the 360 sequence frames when they will scrub.
         this.preloadFrames('mountain', 180)
         this.preloadFrames('podium', 180)
       }, root)
-
-      mm.add('(prefers-reduced-motion: reduce)', () => {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.disable())
-      })
 
       this.cleanupFns.push(() => {
         ctx.revert()
