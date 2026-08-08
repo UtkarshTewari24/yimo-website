@@ -234,10 +234,31 @@
       </p>
     </section>
 
+    <section id="sponsors" class="story-panel partners-panel">
+      <div class="partner-heading">
+        <p class="section-kicker">Sponsors</p>
+        <h2>Sponsors</h2>
+      </div>
+      <div class="partner-orbit">
+        <a
+          v-for="sponsor in sponsors"
+          :key="sponsor.name"
+          class="partner-logo-card"
+          :href="sponsor.href"
+          target="_blank"
+          rel="noopener"
+        >
+          <img :src="sponsor.logo" :alt="sponsor.name" />
+          <span>{{ sponsor.name }}</span>
+          <span v-if="sponsor.tier" class="partner-tier" :class="'tier-' + sponsor.tier.toLowerCase()">{{ sponsor.tier }} Sponsor</span>
+        </a>
+      </div>
+    </section>
+
     <section id="partners" class="story-panel partners-panel">
       <div class="partner-heading">
         <p class="section-kicker">Partners</p>
-        <h2>Partners &amp; Sponsors</h2>
+        <h2>Partners</h2>
       </div>
       <div class="partner-orbit">
         <a
@@ -350,10 +371,12 @@ export default {
           a: 'Use the free registration form and upload the parental consent form before August 27, 23:59 EST.',
         },
       ],
-      partners: [
+      sponsors: [
         { name: 'HRT', logo: '/hrt-logo.png', href: 'https://www.hudsonrivertrading.com/', tier: 'Platinum' },
         { name: 'PiMath', logo: '/PiMath-noBG.png', href: 'https://www.paquinmath.org/', tier: 'Silver' },
         { name: 'AoPS', logo: '/aops-logo.png', href: 'https://artofproblemsolving.com/', tier: 'Bronze' },
+      ],
+      partners: [
         { name: 'USAMOguide', logo: '/Test_logo.png', href: 'https://www.usamoguide.com/' },
         { name: 'Saintly', logo: '/Saintly.png', href: 'https://saintlymath.com/' },
         { name: 'Solvefire', logo: '/solvefire.png', href: 'https://solvefire.net' },
@@ -424,7 +447,14 @@ export default {
       if (!root) return
 
       const mm = gsap.matchMedia()
-      const ctx = gsap.context(() => {
+
+      // Every reveal below starts its targets hidden (autoAlpha: 0) and only
+      // the animation itself brings them back. That start state is written the
+      // moment the tween is built, so it must never be created for a visitor
+      // who won't get the animation that clears it -- otherwise Staff, the FAQ
+      // and the division cards stay invisible for good. Building the whole set
+      // inside the motion-safe query keeps the two in lockstep.
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
         gsap.set('.wheel-word', { autoAlpha: 0, y: 24, rotationX: -40 })
         const wordTl = gsap.timeline({ repeat: -1 })
         gsap.utils.toArray('.wheel-word').forEach((word) => {
@@ -484,12 +514,18 @@ export default {
         this.preloadFrames('podium', 180)
       }, root)
 
+      // Reduced motion: no reveals and no pinning, so every section renders as
+      // ordinary static content. The word wheel is the one thing that still
+      // needs setting up, since its words are stacked in the same spot and
+      // would otherwise all overlap.
       mm.add('(prefers-reduced-motion: reduce)', () => {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.disable())
-      })
+        gsap.set('.wheel-word', { autoAlpha: 0 })
+        gsap.set('.wheel-word:first-child', { autoAlpha: 1 })
+      }, root)
 
+      // matchMedia reverts a branch's inline styles when its query stops
+      // matching, so flipping the OS setting live also restores the page.
       this.cleanupFns.push(() => {
-        ctx.revert()
         mm.revert()
       })
     },
@@ -1247,7 +1283,11 @@ export default {
 
 .partner-orbit {
   display: grid;
-  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  /* Same 5-across track width as before (1120px across five columns, minus the
+     four gaps), but laid out so a row that doesn't fill stays centred under the
+     heading instead of hugging the left edge. */
+  grid-template-columns: repeat(auto-fit, 211px);
+  justify-content: center;
   gap: 1rem;
   width: min(1120px, 100%);
 }
