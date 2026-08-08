@@ -20,6 +20,46 @@ html, *, *::before, *::after {
   font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
 }
 
+/* KaTeX picks a font per glyph class and relies on those metrics for radicals,
+   sums, delimiters and fraction bars. The `!important` universal rule above
+   beats KaTeX's own (unflagged) declarations no matter how specific they are,
+   so restate them here with the same flag. Keep in sync with katex.css. */
+.katex,
+.katex * { font-family: KaTeX_Main, 'Times New Roman', serif !important; }
+.katex .textrm,
+.katex .mathit,
+.katex .mathbf,
+.katex .mainrm { font-family: KaTeX_Main !important; }
+.katex .mathnormal,
+.katex .boldsymbol { font-family: KaTeX_Math !important; }
+.katex .textsf,
+.katex .mathsf,
+.katex .mathboldsf,
+.katex .textboldsf,
+.katex .mathsfit,
+.katex .mathitsf,
+.katex .textitsf { font-family: KaTeX_SansSerif !important; }
+.katex .texttt,
+.katex .mathtt { font-family: KaTeX_Typewriter !important; }
+.katex .amsrm,
+.katex .mathbb,
+.katex .textbb { font-family: KaTeX_AMS !important; }
+.katex .mathcal { font-family: KaTeX_Caligraphic !important; }
+.katex .mathfrak,
+.katex .textfrak,
+.katex .mathboldfrak,
+.katex .textboldfrak { font-family: KaTeX_Fraktur !important; }
+.katex .mathscr,
+.katex .textscr { font-family: KaTeX_Script !important; }
+.katex .delimsizing.size1,
+.katex .delimsizing.mult .delim-size1 > span,
+.katex .op-symbol.small-op { font-family: KaTeX_Size1 !important; }
+.katex .delimsizing.size2,
+.katex .op-symbol.large-op { font-family: KaTeX_Size2 !important; }
+.katex .delimsizing.size3 { font-family: KaTeX_Size3 !important; }
+.katex .delimsizing.size4,
+.katex .delimsizing.mult .delim-size4 > span { font-family: KaTeX_Size4 !important; }
+
 body {
   background: #0a0805;
   color: var(--text);
