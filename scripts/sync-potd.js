@@ -10,6 +10,12 @@
  * Usage:
  *   node scripts/sync-potd.js            # write data/potd.json
  *   node scripts/sync-potd.js --dry-run  # print what would change, write nothing
+ *   node scripts/sync-potd.js --list     # print a folder inventory, parse nothing
+ *
+ * --list reports each file's name, type, size and what the parser makes of it,
+ * so the layout of the folder can be checked without opening Drive. It prints
+ * the opening line of released problems only; anything dated in the future is
+ * withheld, since these logs can be public.
  *
  * Auth, in precedence order:
  *   GOOGLE_ACCESS_TOKEN - OAuth bearer token; works for a private folder.
@@ -29,6 +35,7 @@ const OUTPUT = path.join(__dirname, '..', 'data', 'potd.json')
 const DRIVE = 'https://www.googleapis.com/drive/v3'
 
 const DRY_RUN = process.argv.includes('--dry-run')
+const LIST_ONLY = process.argv.includes('--list')
 
 /* ---------------------------------------------------------------- auth --- */
 
@@ -186,6 +193,41 @@ function validate(entry) {
   return problems
 }
 
+/* ------------------------------------------------------------ inventory --- */
+
+/**
+ * Describe the folder without publishing anything. Enough detail to write or
+ * correct the parseFile adapter; not enough to give away an unreleased problem.
+ */
+async function inventory(files, today) {
+  console.log(`\n${files.length} file(s) in folder ${FOLDER_ID}:\n`)
+  for (const file of files) {
+    let text
+    try {
+      text = await fetchText(file)
+    } catch (error) {
+      console.log(`- ${file.name}\n    type: ${file.mimeType}\n    DOWNLOAD FAILED: ${error.message.split('\n')[0]}`)
+      continue
+    }
+    const lines = text.replace(/\r\n/g, '\n').trim().split('\n')
+    const parsed = parseFile(file, text)
+    const dates = parsed.map((entry) => entry.date)
+    const released = dates.length > 0 && dates.every((date) => date <= today)
+
+    console.log(`- ${file.name}`)
+    console.log(`    type: ${file.mimeType}  bytes: ${text.length}  lines: ${lines.length}`)
+    console.log(
+      `    parsed: ${parsed.length} entry(ies)` +
+        (parsed.length ? ` -> ${parsed.map((e) => `div ${e.division} / ${e.date}`).join(', ')}` : '')
+    )
+    console.log(`    math markers: $=${(text.match(/\$/g) || []).length} backslash=${(text.match(/\\/g) || []).length}`)
+    console.log(
+      `    first line: ${released ? JSON.stringify(lines[0].slice(0, 60)) : '[withheld - unreleased or unparsed]'}`
+    )
+  }
+  console.log('\nInventory only - nothing was written.')
+}
+
 /* ---------------------------------------------------------------- main --- */
 
 async function main() {
@@ -194,6 +236,8 @@ async function main() {
   const files = await listFolder(FOLDER_ID)
   if (!files.length) throw new Error(`Folder ${FOLDER_ID} is empty or unreadable.`)
   console.log(`Found ${files.length} file(s) in the Drive folder.`)
+
+  if (LIST_ONLY) return inventory(files, today)
 
   const entries = []
   const skipped = []
