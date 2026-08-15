@@ -156,10 +156,32 @@ function isProblemFile(file) {
  *     ## Solution
  *     ## Notes
  *
- * Only the `## Problem` section is published. The answer, the worked solution
- * and the notes live in the same file and must never reach the page - the POTD
- * page states outright that answers are not posted there.
+ * The statement is kept separate from the answer, the worked solution and the
+ * notes: the index page lists statements only, and each problem's own page
+ * carries the rest. `### Step` subheadings inside a solution are left in place
+ * for the page to render.
  */
+
+/** Split a document into its `## ` sections, keyed by lowercased heading. */
+function splitSections(body) {
+  const heading = /^##[ \t]+(.+?)[ \t]*$/gm
+  const marks = []
+  let match
+  while ((match = heading.exec(body))) {
+    marks.push({ name: match[1].trim().toLowerCase(), from: match.index, to: heading.lastIndex })
+  }
+  const sections = {}
+  marks.forEach((mark, index) => {
+    const end = index + 1 < marks.length ? marks[index + 1].from : body.length
+    sections[mark.name] = body
+      .slice(mark.to, end)
+      .replace(/^[ \t]*-{3,}[ \t]*$/gm, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  })
+  return sections
+}
+
 function parseMarkdownProblem(file, text) {
   const body = text.replace(/\r\n/g, '\n')
 
@@ -172,19 +194,25 @@ function parseMarkdownProblem(file, text) {
     : findDivision(file.name) ?? findDivision(body.split('\n').slice(0, 5).join(' '))
   if (date == null || division == null) return []
 
-  // Take `## Problem` up to the next `##` heading, then drop the `---` rule
-  // that separates it from the answer.
-  const start = body.match(/^##[ \t]*Problem[ \t]*$/im)
-  if (!start) return []
-  const after = body.slice(start.index + start[0].length)
-  const next = after.match(/^##[ \t]+\S/m)
-  const problem = (next ? after.slice(0, next.index) : after)
-    .replace(/^\s*-{3,}\s*$/gm, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
+  const sections = splitSections(body)
+  if (!sections.problem) return []
 
-  if (!problem) return []
-  return [{ division, date, problem, source: file.name }]
+  return [
+    {
+      division,
+      date,
+      slug: `${date}-div${division}`,
+      problem: sections.problem,
+      answer: sections.answer || '',
+      solution: sections.solution || '',
+      // `## Notes` is deliberately NOT carried across. In this folder it is the
+      // authors' internal calibration log - it names individual solvers and how
+      // fast they solved things - and data/potd.json is committed to a public
+      // repository, so syncing it would publish it no matter what the page
+      // renders. Add `notes: sections.notes` here to change that.
+      source: file.name,
+    },
+  ]
 }
 
 /** Generic fallback for files that do not follow the markdown layout. */
@@ -241,11 +269,13 @@ function validate(entry) {
   if (display % 2 !== 0) problems.push(`odd number of $$ delimiters (${display}) - KaTeX will not render`)
   if (inline % 2 !== 0) problems.push(`odd number of $ delimiters (${inline}) - KaTeX will not render`)
 
-  // The source files carry the answer and the worked solution alongside the
-  // statement. Publishing either would defeat the contest, so treat any
-  // leakage as fatal rather than cosmetic.
+  // The answer and worked solution are published on the problem's own page, but
+  // they must never bleed into the statement shown on the index.
   const leak = entry.problem.match(/^##[ \t]*(Answer|Solution|Notes)\b/im) || entry.problem.match(/\\boxed\{/)
   if (leak) problems.push(`statement contains answer/solution material ("${leak[0]}") - refusing to publish`)
+
+  if (!/^\d{4}-\d{2}-\d{2}-div[12]$/.test(entry.slug || '')) problems.push(`bad slug "${entry.slug}"`)
+  if (!entry.solution) problems.push('no ## Solution section - the problem page would be empty')
 
   return problems
 }
@@ -328,9 +358,16 @@ async function main() {
 
   // Last write wins on a duplicate division+date, so a corrected file replaces
   // the original rather than showing twice.
-  const byKey = new Map(released.map((entry) => [`${entry.division}-${entry.date}`, entry]))
+  const byKey = new Map(released.map((entry) => [entry.slug, entry]))
   const final = [...byKey.values()]
-    .map(({ division, date, problem }) => ({ division, date, problem }))
+    .map(({ division, date, slug, problem, answer, solution }) => ({
+      division,
+      date,
+      slug,
+      problem,
+      answer,
+      solution,
+    }))
     .sort((a, b) => a.division - b.division || a.date.localeCompare(b.date))
 
   console.log(`Parsed ${final.length} problem(s); ${withheld} not yet released; ${skipped.length} skipped.`)

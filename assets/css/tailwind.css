@@ -20,6 +20,76 @@ html, *, *::before, *::after {
   font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
 }
 
+/* Rendered markdown (POTD statements, solutions, notes). These are global
+   because `v-html` content carries no scoped-style attribute. */
+.md > *:first-child { margin-top: 0; }
+.md > *:last-child { margin-bottom: 0; }
+
+.md p {
+  margin: 0 0 1rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+
+.md h3, .md h4, .md h5, .md h6 {
+  margin: 1.75rem 0 0.75rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.md strong { color: var(--text); font-weight: 700; }
+
+.md ul, .md ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+
+.md ul { list-style: disc; }
+.md ol { list-style: decimal; }
+.md li { margin-bottom: 0.3rem; }
+
+.md code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+  font-size: 0.85em;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  color: var(--accent-soft);
+}
+
+.md blockquote {
+  margin: 0 0 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--line-strong);
+  color: var(--text-faint);
+}
+
+/* Wide tables and long equations scroll inside their own box rather than
+   pushing the page sideways. */
+.md .md-table-wrap { overflow-x: auto; margin: 0 0 1rem; }
+
+.md table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.md th, .md td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  text-align: left;
+  color: var(--text-dim);
+}
+
+.md th { color: var(--text); font-weight: 700; background: rgba(255, 255, 255, 0.03); }
+
+.md .md-display { overflow-x: auto; overflow-y: hidden; }
+.md .katex-display { margin: 0.4rem 0; }
+
 /* KaTeX picks a font per glyph class and relies on those metrics for radicals,
    sums, delimiters and fraction bars. The `!important` universal rule above
    beats KaTeX's own (unflagged) declarations no matter how specific they are,
