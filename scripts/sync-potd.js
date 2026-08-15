@@ -130,22 +130,68 @@ function findDivision(text) {
   return short ? Number(short[1]) : null
 }
 
+/** Files that are not problems at all: subfolders, .DS_Store, stray binaries. */
+function isProblemFile(file) {
+  if (file.mimeType === 'application/vnd.google-apps.folder') return false
+  if (file.name.startsWith('.')) return false
+  return /\.md$/i.test(file.name) || file.mimeType === 'text/markdown' || file.mimeType.startsWith('text/')
+}
+
 /**
  * Turn one Drive file into POTD entries.
  *
- * ADAPTER: this is the only part that depends on how the Drive files are
- * actually laid out, and it is deliberately isolated so it can be swapped
- * without touching the fetch, validation or write logic.
+ * ADAPTER: the only part that depends on how the Drive files are laid out,
+ * isolated so it can be swapped without touching fetch, validation or write.
  *
- * It currently handles the two most common layouts:
- *   1. One file per problem, with the division and date in the filename or in
- *      the first lines of the document. The rest of the text is the statement.
- *   2. One file holding many problems, split on lines that carry both a
- *      division and a date (e.g. "Division 1 - August 7, 2026").
+ * The folder's own format is one markdown file per problem, named
+ * `POTD_YYYY-MM-DD_DIV1.md`, laid out as:
  *
- * Anything it cannot classify is reported and skipped rather than guessed at.
+ *     # YIMO II - Problem of the Day
+ *     ## Division 1 | August 2, 2026
+ *     ---
+ *     ## Problem
+ *     <statement, possibly several paragraphs and $$display$$ math>
+ *     ---
+ *     ## Answer
+ *     ## Solution
+ *     ## Notes
+ *
+ * Only the `## Problem` section is published. The answer, the worked solution
+ * and the notes live in the same file and must never reach the page - the POTD
+ * page states outright that answers are not posted there.
  */
+function parseMarkdownProblem(file, text) {
+  const body = text.replace(/\r\n/g, '\n')
+
+  // Division and date come from the filename, which is the authoritative
+  // naming scheme; the in-document heading is the fallback.
+  const fromName = file.name.match(/POTD[_-](\d{4}-\d{2}-\d{2})[_-]DIV\s*([12])/i)
+  const date = fromName ? fromName[1] : findDate(file.name) ?? findDate(body.split('\n').slice(0, 5).join(' '))
+  const division = fromName
+    ? Number(fromName[2])
+    : findDivision(file.name) ?? findDivision(body.split('\n').slice(0, 5).join(' '))
+  if (date == null || division == null) return []
+
+  // Take `## Problem` up to the next `##` heading, then drop the `---` rule
+  // that separates it from the answer.
+  const start = body.match(/^##[ \t]*Problem[ \t]*$/im)
+  if (!start) return []
+  const after = body.slice(start.index + start[0].length)
+  const next = after.match(/^##[ \t]+\S/m)
+  const problem = (next ? after.slice(0, next.index) : after)
+    .replace(/^\s*-{3,}\s*$/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+
+  if (!problem) return []
+  return [{ division, date, problem, source: file.name }]
+}
+
+/** Generic fallback for files that do not follow the markdown layout. */
 function parseFile(file, text) {
+  const markdown = parseMarkdownProblem(file, text)
+  if (markdown.length) return markdown
+
   const body = text.replace(/\r\n/g, '\n').trim()
   const lines = body.split('\n')
 
@@ -188,8 +234,19 @@ function validate(entry) {
   if (entry.division !== 1 && entry.division !== 2) problems.push(`division ${entry.division} is not 1 or 2`)
   if (!/^20\d{2}-\d{2}-\d{2}$/.test(entry.date)) problems.push(`date "${entry.date}" is not YYYY-MM-DD`)
   if (!entry.problem || entry.problem.length < 20) problems.push('statement is empty or suspiciously short')
-  const dollars = (entry.problem.match(/\$/g) || []).length
-  if (dollars % 2 !== 0) problems.push(`odd number of $ delimiters (${dollars}) - KaTeX will not render`)
+
+  // Balanced delimiters, counting $$ as a pair so display math does not trip it.
+  const display = (entry.problem.match(/\$\$/g) || []).length
+  const inline = (entry.problem.match(/\$/g) || []).length - display * 2
+  if (display % 2 !== 0) problems.push(`odd number of $$ delimiters (${display}) - KaTeX will not render`)
+  if (inline % 2 !== 0) problems.push(`odd number of $ delimiters (${inline}) - KaTeX will not render`)
+
+  // The source files carry the answer and the worked solution alongside the
+  // statement. Publishing either would defeat the contest, so treat any
+  // leakage as fatal rather than cosmetic.
+  const leak = entry.problem.match(/^##[ \t]*(Answer|Solution|Notes)\b/im) || entry.problem.match(/\\boxed\{/)
+  if (leak) problems.push(`statement contains answer/solution material ("${leak[0]}") - refusing to publish`)
+
   return problems
 }
 
@@ -233,9 +290,13 @@ async function inventory(files, today) {
 async function main() {
   const today = process.env.POTD_TODAY || new Date().toISOString().slice(0, 10)
 
-  const files = await listFolder(FOLDER_ID)
-  if (!files.length) throw new Error(`Folder ${FOLDER_ID} is empty or unreadable.`)
-  console.log(`Found ${files.length} file(s) in the Drive folder.`)
+  const all = await listFolder(FOLDER_ID)
+  if (!all.length) throw new Error(`Folder ${FOLDER_ID} is empty or unreadable.`)
+  const files = all.filter(isProblemFile)
+  console.log(
+    `Found ${all.length} item(s) in the Drive folder; ${files.length} look like problem files ` +
+      `(skipping ${all.length - files.length}: subfolders and dotfiles).`
+  )
 
   if (LIST_ONLY) return inventory(files, today)
 

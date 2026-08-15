@@ -12,7 +12,8 @@
           class="potd-card"
         >
           <p class="potd-date">{{ formatDate(entry.date) }}</p>
-          <p class="potd-problem">{{ entry.problem }}</p>
+          <!-- eslint-disable-next-line vue/no-v-html -- escaped in formatStatement -->
+          <p class="potd-problem" v-html="formatStatement(entry.problem)"></p>
         </article>
       </div>
     </section>
@@ -58,6 +59,31 @@ export default {
       // back for viewers west of Greenwich.
       const [year, month, day] = date.split('-').map(Number)
       return `${MONTHS[month - 1]} ${day}, ${year}`
+    },
+    /**
+     * The statements come from markdown, where authors bold the qualifiers that
+     * matter ("**strictly** more than twice"). Render that emphasis rather than
+     * leaving the asterisks on screen.
+     *
+     * Everything is HTML-escaped first and the only tags introduced are the
+     * <strong> pairs built here, so nothing in the source file can inject
+     * markup. Escaping leaves `$...$` and `<`, `>` intact as text once parsed,
+     * which is what KaTeX needs to find and render the math afterwards.
+     */
+    formatStatement(text) {
+      const escape = (value) =>
+        value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+      // Split on math spans: `_` and `*` are ordinary characters inside LaTeX,
+      // so emphasis must only ever be applied to the prose between them.
+      return text
+        .split(/(\$\$[\s\S]*?\$\$|\$[^$\n]*\$)/g)
+        .map((part, index) =>
+          index % 2 === 1
+            ? escape(part)
+            : escape(part).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        )
+        .join('')
     },
     renderMath() {
       if (!this.$el || typeof this.$el.querySelectorAll !== 'function') return
@@ -106,6 +132,25 @@ export default {
   font-size: 0.95rem;
   color: var(--text-dim);
   line-height: 1.9;
+  /* Statements arrive as several paragraphs with blank lines between them, so
+     keep the line breaks the source file put there. */
+  white-space: pre-line;
+}
+
+/* KaTeX lays out with its own spans; pre-line inside them adds stray gaps. */
+.potd-problem >>> .katex,
+.potd-problem >>> .katex-display {
+  white-space: normal;
+}
+
+.potd-problem >>> .katex-display {
+  margin: 0.6rem 0;
+}
+
+/* v-html content carries no scope attribute, so this needs the deep combinator. */
+.potd-problem >>> strong {
+  color: var(--text);
+  font-weight: 700;
 }
 
 /* Formulas sit inside the sentence, so keep them close to the body size and
