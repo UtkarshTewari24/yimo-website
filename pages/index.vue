@@ -362,6 +362,10 @@ export default {
     }
   },
   mounted() {
+    // Kick these off first: the mountain/podium frame sequences are what the
+    // very next scroll needs, so they shouldn't wait behind idle callbacks.
+    this.preloadFrames('mountain', 180)
+    this.preloadFrames('podium', 180)
     this.initAnimations()
     this.initLenis()
     this.initThreeMath()
@@ -386,18 +390,13 @@ export default {
       if (img.getAttribute('src') !== nextSrc) img.setAttribute('src', nextSrc)
     },
     preloadFrames(folder, count) {
-      const queue = Array.from({ length: count }, (_, index) => this.framePath(folder, index + 1))
-      const load = () => {
-        queue.forEach((src) => {
-          const img = new Image()
-          img.decoding = 'async'
-          img.src = src
-        })
-      }
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(load, { timeout: 1800 })
-      } else {
-        window.setTimeout(load, 900)
+      // Fetch immediately rather than waiting on requestIdleCallback: these
+      // sequences are ~3MB each and drive the very next scroll animation, so
+      // deferring the fetch is what caused frames to visibly pop in late.
+      for (let index = 0; index < count; index += 1) {
+        const img = new Image()
+        img.decoding = 'async'
+        img.src = this.framePath(folder, index + 1)
       }
     },
     async initLenis() {
@@ -479,9 +478,6 @@ export default {
           duration: 0.55,
           ease: 'power2.out',
         })
-
-        this.preloadFrames('mountain', 180)
-        this.preloadFrames('podium', 180)
       }, root)
 
       mm.add('(prefers-reduced-motion: reduce)', () => {
@@ -688,6 +684,10 @@ export default {
   top: 0;
   transform: translateX(-50%);
   white-space: nowrap;
+  /* Match GSAP's initial autoAlpha(0) state so words don't flash stacked
+     and visible for a frame before JS takes over. */
+  opacity: 0;
+  visibility: hidden;
 }
 
 .hero-copy h1 {
