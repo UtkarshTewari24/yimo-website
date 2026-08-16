@@ -1,5 +1,9 @@
 <template>
-  <div class="min-h-screen w-full" style="position: relative; background: #0a0805;">
+  <div
+    class="min-h-screen w-full app-shell"
+    :class="{ 'app-shell-ready': isReady }"
+    style="position: relative; background: #0a0805;"
+  >
     <div class="page-bg"></div>
     <div class="page-grid"></div>
     <div class="top-strip"></div>
@@ -36,5 +40,35 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return { isReady: false };
+  },
+  mounted() {
+    // Wait a frame so the browser has actually painted the opacity:0 state
+    // before we transition it, then reveal the app with a soft fade instead
+    // of a hard pop the instant Vue finishes mounting.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.isReady = true;
+      });
+    });
+  },
+};
 </script>
+
+<style scoped>
+.app-shell {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.app-shell-ready {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell {
+    opacity: 1;
+    transition: none;
+  }
+}
+</style>
